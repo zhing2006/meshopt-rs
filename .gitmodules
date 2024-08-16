@@ -1,3 +1,4 @@
 [submodule "vendor"]
 	path = vendor
-	url = https://github.com/zeux/meshoptimizer.git
+	url = https://github.com/zhing2006/meshoptimizer.git
+	branch = master_zh

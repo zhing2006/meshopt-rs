@@ -395,7 +395,7 @@ pub const meshopt_EncodeExpMode_meshopt_EncodeExpSharedComponent: meshopt_Encode
 #[doc = " meshopt_encodeFilterExp encodes arbitrary (finite) floating-point data with 8-bit exponent and K-bit integer mantissa (1 <= K <= 24)."]
 #[doc = " Exponent can be shared between all components of a given vector as defined by stride or all values of a given component; stride must be divisible by 4."]
 #[doc = " Input data must contain stride/4 floats for every vector (count*stride/4 total)."]
-pub type meshopt_EncodeExpMode = ::std::os::raw::c_uint;
+pub type meshopt_EncodeExpMode = ::std::os::raw::c_int;
 extern "C" {
     pub fn meshopt_encodeFilterOct(
         destination: *mut ::std::os::raw::c_void,
@@ -458,9 +458,8 @@ extern "C" {
     #[doc = ""]
     #[doc = " vertex_attributes should have attribute_count floats for each vertex"]
     #[doc = " attribute_weights should have attribute_count floats in total; the weights determine relative priority of attributes between each other and wrt position. The recommended weight range is [1e-3..1e-1], assuming attribute data is in [0..1] range."]
-    #[doc = " attribute_count must be <= 16"]
+    #[doc = " attribute_count must be <= 32"]
     #[doc = " vertex_lock can be NULL; when it's not NULL, it should have a value for each vertex; 1 denotes vertices that can't be moved"]
-    #[doc = " TODO target_error/result_error currently use combined distance+attribute error; this may change in the future"]
     pub fn meshopt_simplifyWithAttributes(
         destination: *mut ::std::os::raw::c_uint,
         indices: *const ::std::os::raw::c_uint,
@@ -630,6 +629,11 @@ extern "C" {
         vertex_size: usize,
     ) -> meshopt_VertexFetchStatistics;
 }
+#[doc = " Meshlet is a small mesh cluster (subset) that consists of:"]
+#[doc = " - triangles, an 8-bit micro triangle (index) buffer, that for each triangle specifies three local vertices to use;"]
+#[doc = " - vertices, a 32-bit vertex indirection buffer, that for each local vertex specifies which mesh vertex to fetch vertex attributes from."]
+#[doc = ""]
+#[doc = " For efficiency, meshlet triangles and vertices are packed into two large arrays; this structure contains offsets and counts to access the data."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct meshopt_Meshlet {
@@ -642,6 +646,7 @@ extern "C" {
     #[doc = " Meshlet builder"]
     #[doc = " Splits the mesh into a set of meshlets where each meshlet has a micro index buffer indexing into meshlet vertices that refer to the original vertex buffer"]
     #[doc = " The resulting data can be used to render meshes using NVidia programmable mesh shading pipeline, or in other cluster-based renderers."]
+    #[doc = " When targeting mesh shading hardware, for maximum efficiency meshlets should be further optimized using meshopt_optimizeMeshlet."]
     #[doc = " When using buildMeshlets, vertex positions need to be provided to minimize the size of the resulting clusters."]
     #[doc = " When using buildMeshletsScan, for maximum efficiency the index buffer being converted has to be optimized for vertex cache first."]
     #[doc = ""]

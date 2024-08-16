@@ -85,15 +85,14 @@ pub fn build_meshlets(
     };
     meshlets.truncate(count);
 
-    for i in 0..count {
-        let meshlet = &mut meshlets[i];
+    for meshlet in meshlets.iter_mut() {
         unsafe {
             ffi::meshopt_optimizeMeshlet(
                 &mut meshlet_verts[meshlet.vertex_offset as usize],
                 &mut meshlet_tris[meshlet.triangle_offset as usize],
                 meshlet.triangle_count as usize,
                 meshlet.vertex_count as usize,
-            )
+            );
         };
     }
 
